@@ -10,7 +10,7 @@ class User {
    * локальном хранилище.
    * */
   static setCurrent(user) {
-
+    localStorage.setItem("user", JSON.stringify(data.user));
   }
 
   /**
@@ -18,7 +18,7 @@ class User {
    * пользователе из локального хранилища.
    * */
   static unsetCurrent() {
-
+    localStorage.removeItem('user');
   }
 
   /**
@@ -26,7 +26,11 @@ class User {
    * из локального хранилища
    * */
   static current() {
-
+    try {
+      return JSON.parse(localStorage.getItem("user"));
+    } catch (e) {
+      return null;
+    }
   }
 
   /**
@@ -34,7 +38,14 @@ class User {
    * авторизованном пользователе.
    * */
   static fetch( data, callback = f => f ) {
-
+    let testrequest = {
+      url: "http://bhj-diploma.u-w.me/user/current",
+      method: "GET",
+    };
+    let response = createRequest(testrequest, function(response){
+      User.setCurrent(response);
+      callback(response);
+    });
   }
 
   /**
@@ -44,7 +55,17 @@ class User {
    * User.setCurrent.
    * */
   static login( data, callback = f => f ) {
-
+    let testrequest = {
+      url: "http://bhj-diploma.u-w.me/user/register",
+      method: "POST",
+      body: data,
+      mode: "cors",
+        };
+    let response = createRequest(testrequest, function(data){
+      console.log(data)
+      User.setCurrent(data);
+      callback(data);
+    });
   }
 
   /**
@@ -54,7 +75,17 @@ class User {
    * User.setCurrent.
    * */
   static register( data, callback = f => f ) {
-
+    let testrequest = {
+      url: "http://bhj-diploma.u-w.me/user/register",
+      method: "POST",
+      body: data,
+      mode: "cors",
+        };
+    let response = createRequest(testrequest, function(data){
+      console.log(data)
+      User.setCurrent(data);
+      callback(data);
+    });
   }
 
   /**
@@ -62,6 +93,6 @@ class User {
    * выхода необходимо вызвать метод User.unsetCurrent
    * */
   static logout( data, callback = f => f ) {
-
+    User.unsetCurrent()
   }
 }
